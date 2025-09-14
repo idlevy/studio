@@ -1,0 +1,88 @@
+import { type Command } from "@/lib/types";
+
+export const INITIAL_COMMANDS: Command[] = [
+  {
+    id: "1",
+    label: "List all pods in a namespace",
+    command: "kubectl get pods -n my-namespace",
+    category: "kubectl",
+    group: "Pod Management",
+  },
+  {
+    id: "2",
+    label: "Describe a specific pod",
+    command: "kubectl describe pod my-pod-name -n my-namespace",
+    category: "kubectl",
+    group: "Pod Management",
+  },
+  {
+    id: "3",
+    label: "Show Git status",
+    command: "git status",
+    category: "git",
+    group: "Working Directory",
+  },
+  {
+    id: "4",
+    label: "Add all changes to staging",
+    command: "git add .",
+    category: "git",
+    group: "Staging",
+  },
+  {
+    id: "5",
+    label: "Commit with a message",
+    command: 'git commit -m "feat: your feature description"',
+    category: "git",
+    group: "Staging",
+  },
+  {
+    id: "6",
+    label: "Push to remote branch",
+    command: "git push origin main",
+    category: "git",
+    group: "Remote",
+  },
+  {
+    id: "7",
+    label: "List running Docker containers",
+    command: "docker ps",
+    category: "docker",
+    group: "Container Lifecycle",
+  },
+  {
+    id: "8",
+    label: "List all Docker containers",
+    command: "docker ps -a",
+    category: "docker",
+    group: "Container Lifecycle",
+  },
+  {
+    id: "9",
+    label: "Install NPM dependencies",
+    command: "npm install",
+    category: "npm",
+    group: "Dependency Management",
+  },
+  {
+    id: "10",
+    label: "Run tests with NPM",
+    command: "npm test",
+    category: "npm",
+    group: "Scripts",
+  },
+  {
+    id: "11",
+    label: "Force delete a pod",
+    command: "kubectl delete pod my-pod --grace-period=0 --force",
+    category: "kubectl",
+    group: "Pod Management",
+  },
+  {
+    id: "12",
+    label: "Delete all files in a directory",
+    command: "rm -rf /path/to/directory/*",
+    category: "system",
+    group: "File System",
+  },
+];
