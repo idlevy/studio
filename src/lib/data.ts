@@ -1,4 +1,4 @@
-import { type Command } from "@/lib/types";
+import { type Command, type Link } from "@/lib/types";
 
 export const INITIAL_COMMANDS: Command[] = [
   {
@@ -85,4 +85,28 @@ export const INITIAL_COMMANDS: Command[] = [
     category: "system",
     group: "File System",
   },
+];
+
+export const INITIAL_LINKS: Link[] = [
+  {
+    id: "l1",
+    label: "Next.js Docs",
+    url: "https://nextjs.org/docs",
+    category: "Documentation",
+    group: "Frameworks"
+  },
+  {
+    id: "l2",
+    label: "Tailwind CSS",
+    url: "https://tailwindcss.com/docs",
+    category: "Documentation",
+    group: "Styling"
+  },
+  {
+    id: "l3",
+    label: "Genkit Docs",
+    url: "https://firebase.google.com/docs/genkit",
+    category: "Documentation",
+    group: "AI"
+  }
 ];

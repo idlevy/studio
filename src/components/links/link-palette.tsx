@@ -1,61 +1,58 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import { Search, GitBranch, Box, Package, Cog, Container } from "lucide-react";
-import { Command as CommandType } from "@/lib/types";
+import { Search, Book, Code, Brain, Globe } from "lucide-react";
+import { Link as LinkType } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CommandItem } from "./command-item";
+import { LinkItem } from "./link-item";
 import { useHotKey } from "@/hooks/use-hotkey";
 
-interface CommandPaletteProps {
-  commands: CommandType[];
+interface LinkPaletteProps {
+  links: LinkType[];
 }
 
 const categoryIcons: { [key: string]: React.ElementType } = {
-  git: GitBranch,
-  docker: Box,
-  npm: Package,
-  system: Cog,
-  kubectl: Container,
+  documentation: Book,
+  frameworks: Code,
+  styling: Code,
+  ai: Brain,
 };
 
 const getCategoryIcon = (category: string) => {
   const Icon = categoryIcons[category.toLowerCase()];
-  return Icon ? <Icon className="h-4 w-4 mr-2" /> : <Cog className="h-4 w-4 mr-2" />;
+  return Icon ? <Icon className="h-4 w-4 mr-2" /> : <Globe className="h-4 w-4 mr-2" />;
 };
 
-export function CommandPalette({ commands }: CommandPaletteProps) {
+export function LinkPalette({ links }: LinkPaletteProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useHotKey("k", () => inputRef.current?.focus(), { meta: true });
   useHotKey("k", () => inputRef.current?.focus(), { ctrl: true });
 
-  const filteredAndGroupedCommands = useMemo(() => {
-    const filtered = commands.filter(
-      (command) =>
-        command.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        command.command.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        command.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        command.group?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAndGroupedLinks = useMemo(() => {
+    const filtered = links.filter(
+      (link) =>
+        link.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        link.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        link.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        link.group?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    return filtered.reduce((acc, command) => {
-      const groupName = command.group || "General";
+    return filtered.reduce((acc, link) => {
+      const groupName = link.group || "General";
       if (!acc[groupName]) {
         acc[groupName] = [];
       }
-      acc[groupName].push(command);
+      acc[groupName].push(link);
       return acc;
-    }, {} as Record<string, CommandType[]>);
-  }, [commands, searchTerm]);
+    }, {} as Record<string, LinkType[]>);
+  }, [links, searchTerm]);
   
   useEffect(() => {
-    // Clear search term when commands change to avoid showing an empty list
-    // when switching back to the tab with a previous search term
     setSearchTerm("");
-  }, [commands]);
+  }, [links]);
 
   return (
     <div className="flex flex-col h-full">
@@ -65,7 +62,7 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Search commands... (Press Ctrl+K or ⌘K)"
+            placeholder="Search links... (Press Ctrl+K or ⌘K)"
             className="pl-10 text-base"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -74,18 +71,18 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
       </div>
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6">
-          {Object.keys(filteredAndGroupedCommands).length > 0 ? (
-            Object.entries(filteredAndGroupedCommands).map(([group, commandsInGroup]) => (
+          {Object.keys(filteredAndGroupedLinks).length > 0 ? (
+            Object.entries(filteredAndGroupedLinks).map(([group, linksInGroup]) => (
               <div key={group}>
                 <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-2">
                   {group}
                 </h2>
                 <div className="space-y-1">
-                  {commandsInGroup.map((command) => (
-                    <CommandItem
-                      key={command.id}
-                      command={command}
-                      icon={getCategoryIcon(command.category)}
+                  {linksInGroup.map((link) => (
+                    <LinkItem
+                      key={link.id}
+                      link={link}
+                      icon={getCategoryIcon(link.category)}
                     />
                   ))}
                 </div>
@@ -93,7 +90,7 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
             ))
           ) : (
             <div className="text-center py-10">
-              <p className="text-muted-foreground">No commands found.</p>
+              <p className="text-muted-foreground">No links found.</p>
             </div>
           )}
         </div>

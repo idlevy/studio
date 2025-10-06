@@ -3,13 +3,18 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
 import { CommandPalette } from "@/components/commands/command-palette";
-import { type Command } from "@/lib/types";
-import { INITIAL_COMMANDS } from "@/lib/data";
+import { LinkPalette } from "@/components/links/link-palette";
+import { type Command, type Link } from "@/lib/types";
+import { INITIAL_COMMANDS, INITIAL_LINKS } from "@/lib/data";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const COMMANDS_STORAGE_KEY = "command-pal-commands";
+const LINKS_STORAGE_KEY = "command-pal-links";
 
 export default function Home() {
   const [commands, setCommands] = useState<Command[]>([]);
+  const [links, setLinks] = useState<Link[]>([]);
+  const [activeTab, setActiveTab] = useState("commands");
 
   useEffect(() => {
     try {
@@ -23,6 +28,17 @@ export default function Home() {
       console.error("Failed to load commands from localStorage, using initial commands.", error);
       setCommands(INITIAL_COMMANDS);
     }
+    try {
+      const storedLinks = localStorage.getItem(LINKS_STORAGE_KEY);
+      if (storedLinks) {
+        setLinks(JSON.parse(storedLinks));
+      } else {
+        setLinks(INITIAL_LINKS);
+      }
+    } catch (error) {
+      console.error("Failed to load links from localStorage, using initial links.", error);
+      setLinks(INITIAL_LINKS);
+    }
   }, []);
 
   useEffect(() => {
@@ -31,6 +47,12 @@ export default function Home() {
     }
   }, [commands]);
 
+  useEffect(() => {
+    if (links.length > 0) {
+      localStorage.setItem(LINKS_STORAGE_KEY, JSON.stringify(links));
+    }
+  }, [links]);
+
   const addCommand = (newCommand: Omit<Command, "id">) => {
     setCommands((prevCommands) => [
       { ...newCommand, id: String(Date.now()) },
@@ -38,11 +60,31 @@ export default function Home() {
     ]);
   };
 
+  const addLink = (newLink: Omit<Link, "id">) => {
+    setLinks((prevLinks) => [
+      { ...newLink, id: String(Date.now()) },
+      ...prevLinks,
+    ]);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background">
-      <Header addCommand={addCommand} />
+      <Header addCommand={addCommand} addLink={addLink} activeTab={activeTab} />
       <main className="flex-1 overflow-hidden">
-        <CommandPalette commands={commands} />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+          <div className="p-4 border-b">
+            <TabsList>
+              <TabsTrigger value="commands">Commands</TabsTrigger>
+              <TabsTrigger value="links">Links</TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value="commands" className="flex-1 overflow-hidden">
+            <CommandPalette commands={commands} />
+          </TabsContent>
+          <TabsContent value="links" className="flex-1 overflow-hidden">
+            <LinkPalette links={links} />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

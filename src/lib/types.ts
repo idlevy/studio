@@ -5,3 +5,11 @@ export type Command = {
   category: string;
   group?: string;
 };
+
+export type Link = {
+  id: string;
+  label: string;
+  url: string;
+  category: string;
+  group?: string;
+};
