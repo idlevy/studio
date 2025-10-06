@@ -10,6 +10,8 @@ import { useHotKey } from "@/hooks/use-hotkey";
 
 interface LinkPaletteProps {
   links: LinkType[];
+  onEditLink: (link: LinkType) => void;
+  onDeleteLink: (id: string) => void;
 }
 
 const categoryIcons: { [key: string]: React.ElementType } = {
@@ -24,7 +26,7 @@ const getCategoryIcon = (category: string) => {
   return Icon ? <Icon className="h-4 w-4 mr-2" /> : <Globe className="h-4 w-4 mr-2" />;
 };
 
-export function LinkPalette({ links }: LinkPaletteProps) {
+export function LinkPalette({ links, onEditLink, onDeleteLink }: LinkPaletteProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -83,6 +85,8 @@ export function LinkPalette({ links }: LinkPaletteProps) {
                       key={link.id}
                       link={link}
                       icon={getCategoryIcon(link.category)}
+                      onEdit={onEditLink}
+                      onDelete={onDeleteLink}
                     />
                   ))}
                 </div>

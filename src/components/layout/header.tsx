@@ -22,14 +22,14 @@ export function Header({ addCommand, addLink, activeTab }: HeaderProps) {
       </div>
       <div className="flex items-center gap-2">
         {activeTab === 'commands' ? (
-          <AddCommandDialog onAddCommand={addCommand}>
+          <AddCommandDialog onConfirm={addCommand}>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
               Add Command
             </Button>
           </AddCommandDialog>
         ) : (
-          <AddLinkDialog onAddLink={addLink}>
+          <AddLinkDialog onConfirm={addLink}>
             <Button>
               <LinkIcon className="mr-2 h-4 w-4" />
               Add Link

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,15 +37,16 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface AddCommandDialogProps {
   children: React.ReactNode;
-  onAddCommand: (newCommand: Omit<Command, "id">) => void;
+  onConfirm: (command: Omit<Command, "id"> | Command) => void;
+  commandToEdit?: Command;
 }
 
-export function AddCommandDialog({ children, onAddCommand }: AddCommandDialogProps) {
+export function AddCommandDialog({ children, onConfirm, commandToEdit }: AddCommandDialogProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: commandToEdit || {
       label: "",
       command: "",
       category: "",
@@ -53,12 +54,29 @@ export function AddCommandDialog({ children, onAddCommand }: AddCommandDialogPro
     },
   });
 
+  useEffect(() => {
+    if (open) {
+      form.reset(commandToEdit || {
+        label: "",
+        command: "",
+        category: "",
+        group: "",
+      });
+    }
+  }, [open, commandToEdit, form]);
+
+  const isEditing = !!commandToEdit;
+
   function onSubmit(values: FormValues) {
-    onAddCommand(values);
-    toast({
-      title: "Success!",
-      description: "Your command has been added.",
-    });
+    if (isEditing) {
+      onConfirm({ ...commandToEdit, ...values });
+    } else {
+      onConfirm(values);
+       toast({
+        title: "Success!",
+        description: "Your command has been added.",
+      });
+    }
     form.reset();
     setOpen(false);
   }
@@ -68,9 +86,9 @@ export function AddCommandDialog({ children, onAddCommand }: AddCommandDialogPro
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Command</DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Command" : "Add New Command"}</DialogTitle>
           <DialogDescription>
-            Save a new command to your palette for quick access.
+            {isEditing ? "Update the details of your command." : "Save a new command to your palette for quick access."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -128,7 +146,7 @@ export function AddCommandDialog({ children, onAddCommand }: AddCommandDialogPro
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save Command</Button>
+              <Button type="submit">{isEditing ? "Save Changes" : "Save Command"}</Button>
             </DialogFooter>
           </form>
         </Form>

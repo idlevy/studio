@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,15 +37,16 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface AddLinkDialogProps {
   children: React.ReactNode;
-  onAddLink: (newLink: Omit<Link, "id">) => void;
+  onConfirm: (link: Omit<Link, "id"> | Link) => void;
+  linkToEdit?: Link;
 }
 
-export function AddLinkDialog({ children, onAddLink }: AddLinkDialogProps) {
+export function AddLinkDialog({ children, onConfirm, linkToEdit }: AddLinkDialogProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: linkToEdit || {
       label: "",
       url: "",
       category: "",
@@ -53,12 +54,29 @@ export function AddLinkDialog({ children, onAddLink }: AddLinkDialogProps) {
     },
   });
 
+  useEffect(() => {
+    if (open) {
+      form.reset(linkToEdit || {
+        label: "",
+        url: "",
+        category: "",
+        group: "",
+      });
+    }
+  }, [open, linkToEdit, form]);
+
+  const isEditing = !!linkToEdit;
+
   function onSubmit(values: FormValues) {
-    onAddLink(values);
-    toast({
-      title: "Success!",
-      description: "Your link has been added.",
-    });
+    if (isEditing) {
+      onConfirm({ ...linkToEdit, ...values });
+    } else {
+      onConfirm(values);
+      toast({
+        title: "Success!",
+        description: "Your link has been added.",
+      });
+    }
     form.reset();
     setOpen(false);
   }
@@ -68,9 +86,9 @@ export function AddLinkDialog({ children, onAddLink }: AddLinkDialogProps) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Link</DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Link" : "Add New Link"}</DialogTitle>
           <DialogDescription>
-            Save a new URL to your palette for quick access.
+            {isEditing ? "Update the details of your link." : "Save a new URL to your palette for quick access."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -128,7 +146,7 @@ export function AddLinkDialog({ children, onAddLink }: AddLinkDialogProps) {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save Link</Button>
+              <Button type="submit">{isEditing ? "Save Changes" : "Save Link"}</Button>
             </DialogFooter>
           </form>
         </Form>

@@ -10,6 +10,8 @@ import { useHotKey } from "@/hooks/use-hotkey";
 
 interface CommandPaletteProps {
   commands: CommandType[];
+  onEditCommand: (command: CommandType) => void;
+  onDeleteCommand: (id: string) => void;
 }
 
 const categoryIcons: { [key: string]: React.ElementType } = {
@@ -25,7 +27,7 @@ const getCategoryIcon = (category: string) => {
   return Icon ? <Icon className="h-4 w-4 mr-2" /> : <Cog className="h-4 w-4 mr-2" />;
 };
 
-export function CommandPalette({ commands }: CommandPaletteProps) {
+export function CommandPalette({ commands, onEditCommand, onDeleteCommand }: CommandPaletteProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -86,6 +88,8 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
                       key={command.id}
                       command={command}
                       icon={getCategoryIcon(command.category)}
+                      onEdit={onEditCommand}
+                      onDelete={onDeleteCommand}
                     />
                   ))}
                 </div>
