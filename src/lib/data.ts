@@ -102,11 +102,4 @@ export const INITIAL_LINKS: Link[] = [
     category: "Documentation",
     group: "Styling"
   },
-  {
-    id: "l3",
-    label: "Genkit Docs",
-    url: "https://firebase.google.com/docs/genkit",
-    category: "Documentation",
-    group: "AI"
-  }
 ];
